@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Forum</h1>
+<p>
+	{% if forum_list %}
+	<ul>
+		{% for forum in forum_list %}
+		<li>
+			<a href="{% url 'forum:forum-detail' forum.id %}">{{forum.title}}</a>
+			{% if forum.owner == user %}
+			(<a href="{% url 'forum:forum-update' forum.id %}">Edit</a> | 
+			<a href="{% url 'forum:forum-delete' forum.id %}">Delete</a>)
+			{% endif %}
+			<!-- Forum-like and Forum-dislike -->
+			{% if request.user.is_authenticated %}
+			<a href="#" onclick="LikeForum('{% url 'forum:forum-dislike' forum.id %}', {{forum.id}}); return false;" 
+			{% if forum.id not in likes %} style="display: none;" {% endif %} id="like_{{forum.id}}">
+			<span class="fa-stack" style="vertical-align: middle;">
+				<i class="fa fa-thumbs-up fa-stack-1x" style="color: orange;"></i>
+			</span>
+			
+			<a href="#" onclick="LikeForum('{% url 'forum:forum-like' forum.id %}', {{forum.id}}); return false;"
+			{% if forum.id in likes %} style="display: none;" {% endif %} id="dislike_{{forum.id}}">
+			<span class="fa-stack" style="vertical-align: middle;">
+        		<i class="fa fa-thumbs-o-up fa-stack-1x"></i>
+        	</span>	
+			</a>
+         
+            {% endif %}
+
+		</li>
+		{% endfor %}
+	</ul>
+	{% else %}
+	There are no forum in the database
+	{% endif %}
+</p>
+<p>
+	<a href="{% url 'forum:forum-create' %}">Add an forum</a>and
+</p>
+<script>
+	function LikeForum(url, forum_id) {
+    console.log('Requesting JSON');
+    $.post(url, {},  function(rowz){
+        console.log(url, 'finished');
+        console.log(rowz);
+        $("#dislike_"+forum_id).toggle();
+        $("#like_"+forum_id).toggle();
+    }).fail(function(xhr) {
+        alert('Url failed with '+xhr.status+' '+url);
+    });
+}
+</script>
+{% endblock content %}

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
+</head>
+<body>
+	this works? This is working perfectly fine 
+	<div id="chatcontent">
+		<img src="{% url 'jsonapp:static' 'spinner.gif' %}" alt="Loading..."/>
+	</div>
+	<script type="text/javascript">
+		function updateMsg() {
+    	console.log('Requesting JSON'); 
+    	$.getJSON('{% url 'jsonapp:messages' %}', function(data){
+        console.log('JSON', data);
+        $('#chatcontent').empty();
+        for (var i =0; i<data.length; i++){
+        	block = data[i];
+        	$("#chatcontent").append('<p>'+ block[0] +
+        		"<br/>&nbsp;&nbsp;" + block[1]+"</p>\n");
+        }
+        setTimeout('updateMsg()', 4000);
+    });
+}
+
+$(document).ready(function() {
+	$.ajaxSetup({ cache: false });
+    setTimeout('updateMsg()', 2000);
+});
+
+	</script>
+</body>
+</html>

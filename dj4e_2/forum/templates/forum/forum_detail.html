@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block content %}
+	<div class="content-section">
+	{% if forum.owner == user %}
+	<span style="float:right; font-size: 2vh;">
+		<a href="{% url 'forum:forum-update' forum.id %}"><i class="fa fa-pencil"></i></a>
+		<a style="margin-left: 10px;" href="{% url 'forum:forum-delete' forum.id %}"><i class="fa fa-trash"></i></a>
+	</span>
+	{% endif %}
+	<h1>
+		{{ forum.title }}
+	</h1>
+	<hr>
+	<p>
+		{{ forum.text }}
+	</p>
+	<p>
+		(Posted: {{ forum.created_at|naturaltime }} by {{forum.owner}}) 
+	</p>
+	<hr>
+	{% if user.is_authenticated %}
+	<br clear="all"/>
+	<p>
+	{% load crispy_forms_tags %}
+	<form method="post" action="{% url 'forum:forum-comment-create' forum.id %}">
+		{% csrf_token %}
+		{{ comment_form|crispy }}
+		<input type="submit" name="" value="Submit">
+		<input type="submit" name="" value="all forums" onclick="window.location.href='{% url 'forum:main' %}'; return false;">
+
+	</form>
+	{% endif %}
+	{% if comments %}
+		{% for comment in comments %}
+		<p>
+			<article style="border:2px solid pink; padding: 10px;">
+			{{comment.owner}}<span style="float:right;">({{ comment.updated_at|naturaltime }})</span><br>
+			{{comment.text}}
+			{% if comment.owner == user %}
+				<a style="float: right;"href="{% url 'forum:comment-delete' comment.id %}">delete</a>
+			{% endif %}
+			</article>
+		</p>
+		{% endfor %}
+	{% endif %}
+</p>
+</div>
+{% endblock content %}

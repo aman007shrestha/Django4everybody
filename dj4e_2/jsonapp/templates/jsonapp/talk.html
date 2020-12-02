@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="content-section">
+<h1>Chat</h1>
+<form method="post">
+{% csrf_token %}
+<input type="text" name="message" size="40"/><br>
+<input type="submit" value="Chat"/> 
+<input type="submit" name="reset" value="Reset"/> 
+<a href="{% url 'jsonapp:main' %}" target="_blank">Cancel</a>
+</p>
+</form>
+
+<div id="chatcontent">
+<img src="{% url 'jsonapp:static' 'spinner.gif' %}" alt="Loading..."/>
+</div>
+</div>
+
+<script type="text/javascript">
+function updateMsg() {
+    console.log('Requesting JSON'); 
+    $.getJSON('{% url 'jsonapp:messages' %}', function(rowz){
+        console.log('JSON', rowz);
+        $('#chatcontent').empty();
+        for (var i = 0; i < rowz.length; i++) {
+          arow = rowz[i];
+          $('#chatcontent').append('<p>'+arow[0] +
+              '<br/>&nbsp;'+arow[1]+"&nbsp;by&nbsp;" + arow[2] +"</p>\n");
+        }
+        setTimeout('updateMsg()', 4000);
+    });
+}
+
+$(document).ready(function() {
+	$.ajaxSetup({ cache: false });
+    setTimeout('updateMsg()', 2000);
+});
+
+// Make sure JSON requests are not cached
+
+</script>
+{% endblock %}
